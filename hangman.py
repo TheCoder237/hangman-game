@@ -1,23 +1,35 @@
 import random, time, os
 from hangman_data import HANGMAN_PICS
 
-WORDBANK = ["dog", 'blink', 'taco', 'buffalo', 'beef', 'zebra', 'flower','computer', 'pillow']
+WORDBANK = {
+  "easy": ["apple", "banana", "guitar", "pumpkin", "beach"],
+  "medium": ["wizard", "jigsaw", "quartz", "blizzard", "ninja"],
+  "hard": ["jazz", "sphinx", "rhythm", "fluff", "gargantuan"]
+}
 
 def clearScreen():
   os.system("cls" if os.name == "nt" else "clear")
 
 def play():
-  word = random.choice(WORDBANK)
+  print("Select difficulty mode")
+  difficulty = input("easy | medium | hard : ").lower().strip()
+
+  if difficulty not in WORDBANK:
+    print("Invalid Choice! DEFAULT MODE: EASY")
+    difficulty = "easy"
+
+  word = random.choice(WORDBANK[difficulty])
   correct_guesses = set()
   wrong_guesses = set()
-  lives = 6
+  MAX_LIVES = 6
+  lives = MAX_LIVES
 
   while lives > 0:
     time.sleep(1)
     clearScreen()
 
     print("🌟 HANGMAN 🌟\n")
-    stage = 6 - lives
+    stage = MAX_LIVES - lives
     print(HANGMAN_PICS[stage])
     print(f"Lives: {lives}")
     print(f"Wrong Guesses: {', '.join(wrong_guesses)}\n")
@@ -39,13 +51,14 @@ def play():
       wrong_guesses.add(guess)
       lives -= 1
       print(f"Nope, does NOT contain {guess}! \n{lives} left.")
+      print(f"Correct: {', '.join(correct_guesses)}")
 
     all_letters_found = True
     for letter in word:
       if letter in correct_guesses:
-        print(letter, end='')
+        print(letter, end=' ')
       else:
-        print('_', end='')
+        print('_', end=' ')
         all_letters_found = False
 
     print()
